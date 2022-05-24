@@ -18,6 +18,25 @@ class Category(GlobalBaseModel):
     def __str__(self):
         return self.name
 
+    @staticmethod
+    def create_category(name):
+        """
+        Used to create a new category based on name. Slug will be auto populated on save
+        :param name: str
+        :return: Category instance
+        """
+        return Category.objects.create(name=name)
+
+    @staticmethod
+    def get_category_by_name(name):
+        """
+        Get category by name. We are filtering slug after doing slugify on name to avoid duplicates
+        example: "science fiction" and "Science    Fiction  " will have same slugs and which will be a duplicate for us
+        :param name: str
+        :return: Category instance
+        """
+        return Category.objects.filter(slug=slugify(name)).first()
+
     class Meta(GlobalBaseModel.Meta):
         verbose_name = "Category"
         verbose_name_plural = "Categories"
@@ -25,13 +44,35 @@ class Category(GlobalBaseModel):
 
 
 class Author(GlobalBaseModel):
-    name = models.CharField(max_length=150, help_text="Author name")
+    name = models.CharField(max_length=150, unique=True, help_text="Author name")
     phone_number = PhoneNumberField(null=True, blank=True, help_text="Author phone number")
     birth_date = models.DateField(null=True, blank=True, help_text="Author birth date")
     death_date = models.DateField(null=True, blank=True, help_text="Author death date")
 
     def __str__(self):
         return self.name
+
+    @staticmethod
+    def get_author_by_name(name):
+        """
+        Used to fetch author by name
+        :param name: str
+        :return: Author instance or None
+        """
+        return Author.objects.filter(name__iexact=name).first()
+
+    @staticmethod
+    def create_author(name, phone_number=None, birth_date=None, death_date=None):
+        """
+        Used to create a new author
+        :param name: str
+        :param phone_number: str
+        :param birth_date: str (date)
+        :param death_date: str (date)
+        :return: Author instance
+        """
+        return Author.objects.create(name=name, phone_number=phone_number,
+                                     birth_date=birth_date, death_date=death_date)
 
     class Meta(GlobalBaseModel.Meta):
         verbose_name = "Author"

@@ -1,3 +1,5 @@
 Django==3.2.13
 uuid==1.30
 django-phonenumber-field==6.1.0
+djangorestframework==3.13.1
+Markdown==3.3.7
