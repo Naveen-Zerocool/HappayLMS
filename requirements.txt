@@ -3,3 +3,5 @@ uuid==1.30
 django-phonenumber-field==6.1.0
 djangorestframework==3.13.1
 Markdown==3.3.7
+phonenumberslite==8.12.48
+drf-yasg==1.20.0
