@@ -35,3 +35,37 @@ def validate_date(given_date, validate_format="%Y-%m-%d"):
         return True, None
     except ValueError:
         return False, "Date format not valid, date should follow YYYY-MM-DD format. Example: 2022-03-07"
+
+
+def can_string_be_converted_to_bool(str_):
+    """
+    To check if the supplied value can be converted to bool
+    :param str_: supplied value
+    :return: bool value
+    """
+    if not str_:
+        return False
+    if str_ in [True, False, 0, 1] or str_.lower() in ['true', 't', 'yes', 'y', '1', "false", 'f', 'no', 'n', '0']:
+        return True
+    return False
+
+
+def convert_string_to_bool(str_):
+    """
+    To convert the supplied value to boolean
+    :param str_: supplied value
+    :return: bool value
+    """
+    if can_string_be_converted_to_bool(str_=str_):
+        true = ("True", "true", "TRUE", "T", "t", True,
+                "YES", "Yes", "yes", "Y", "y", "1", 1)
+        false = ("False", "false", "FALSE", "F", "f",
+                 False, "No", "no", "NO", "N", "n", "0", 0)
+        if str_ in true:
+            return True
+        elif str_ in false:
+            return False
+        else:
+            raise ValueError("Invalid inputs for STR to Bool conversion ")
+    else:
+        return False

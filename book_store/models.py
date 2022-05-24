@@ -81,6 +81,7 @@ class Author(GlobalBaseModel):
 
 
 class Book(GlobalBaseModel):
+    slug = models.SlugField(unique=True, blank=True)
     title = models.TextField(help_text="Name of the Book")
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="books",
                                help_text="Author of the book")
@@ -99,8 +100,40 @@ class Book(GlobalBaseModel):
             title += f" - {self.category.name}"
         return title
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.slug = slugify(self.title)
+        super(Book, self).save(force_insert=force_insert, force_update=force_update,
+                               using=using, update_fields=update_fields)
+
+    @staticmethod
+    def get_book_by_title_and_author(title, author):
+        """
+        Get book by name. We are filtering slug after doing slugify on name to avoid duplicates
+        example: "science fiction" and "Science    Fiction  " will have same slugs and which will be a duplicate for us
+        :param title: str
+        :param author: Author
+        :return: Book instance
+        """
+        return Book.objects.filter(slug=slugify(title), author=author).first()
+
+    @staticmethod
+    def add_book(title, author, category, publisher_name, published_date, price, units_sold):
+        """
+        Used to add a book
+        :param title: str
+        :param author: Author
+        :param category: Category
+        :param publisher_name: str
+        :param published_date: date
+        :param price: float
+        :param units_sold: int
+        :return: Book instance
+        """
+        return Book.objects.create(title=title, author=author, category=category, publisher_name=publisher_name,
+                                   published_date=published_date, price=price, units_sold=units_sold)
+
     class Meta(GlobalBaseModel.Meta):
-        unique_together = ["title", "author_id"]
+        unique_together = ["slug", "author_id"]
         verbose_name = "Book"
         verbose_name_plural = "Books"
         db_table = "books"

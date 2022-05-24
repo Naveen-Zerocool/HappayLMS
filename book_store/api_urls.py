@@ -13,4 +13,10 @@ urlpatterns = [
          name='categories'),
     path('categories/<uuid:category_id>/', views.CategoryView.as_view(),
          name='individual-category'),
+
+    path('books/search/', views.BookSearchView.as_view(),
+         name='search-books'),
+
+    path('books/', views.BookView.as_view(),
+         name='individual-book'),
 ]
