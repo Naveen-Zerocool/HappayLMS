@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
 from django.contrib.auth.models import Group
+from rest_framework.authtoken.models import TokenProxy
 
 from book_store.models import Category, Author, Book
 
@@ -29,6 +30,7 @@ admin.site.register(Book, BookAdmin)
 
 
 admin.site.unregister(Group)
+admin.site.unregister(TokenProxy)
 
 
 AdminSite.site_header = "Happay LMS Admin"
