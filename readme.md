@@ -32,6 +32,10 @@
 
 On postman collection have added a test case for checking if the response code is 200 for all the requests, so we can use runner to execute all APIs available at once.
 
+API Collection: [Happay LMS API Environment.postman_environment.json](Happay LMS API Environment.postman_environment.json)
+
+Postman Environment: [Happay LMS APIs.postman_collection.json](Happay LMS APIs.postman_collection.json)
+
 **Swagger API Doc:** http://127.0.0.1:8000/docs/
 
 Swagger Document is not accurate and neat, due to time constrains have not proceeded with it.
