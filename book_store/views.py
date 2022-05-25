@@ -1,7 +1,8 @@
 from django.db.models import Q
+from rest_framework import status
 from rest_framework.pagination import LimitOffsetPagination
 
-from HappayLMS.base_api_views import GlobalAPIView
+from HappayLMS.base_api_views import AuthenticatedAPIView
 from HappayLMS.standard_responses import StandardResponse
 from HappayLMS.utils import required_params
 from book_store.models import Author, Category, Book
@@ -9,7 +10,7 @@ from book_store.serializers import AuthorSerializer, CategorySerializer, BookSer
 from book_store.utils import validate_phone_number, validate_date, validate_data, convert_string_to_bool
 
 
-class AuthorView(GlobalAPIView, LimitOffsetPagination):
+class AuthorView(AuthenticatedAPIView, LimitOffsetPagination):
 
     def get(self, request, author_id=None):
         total_count = None
@@ -43,7 +44,8 @@ class AuthorView(GlobalAPIView, LimitOffsetPagination):
         if Author.get_author_by_name(name=name):
             error.update({"name": "Author with same name already exits, add some identifier for differencing authors"})
         if error:
-            return StandardResponse(response_data={}, error=error, message="Failed to add author")
+            return StandardResponse(response_data={}, error=error, http_status=status.HTTP_400_BAD_REQUEST,
+                                    message="Failed to add author")
 
         author = Author.create_author(name=name, phone_number=phone_number,
                                       birth_date=birth_date, death_date=death_date)
@@ -52,7 +54,7 @@ class AuthorView(GlobalAPIView, LimitOffsetPagination):
                                 message="Added author details successfully")
 
 
-class CategoryView(GlobalAPIView, LimitOffsetPagination):
+class CategoryView(AuthenticatedAPIView, LimitOffsetPagination):
 
     def get(self, request, category_id=None):
         total_count = None
@@ -75,6 +77,7 @@ class CategoryView(GlobalAPIView, LimitOffsetPagination):
         if Category.get_category_by_name(name=name):
             return StandardResponse(response_data={},
                                     error={"name": "Category with same name already exits"},
+                                    http_status=status.HTTP_400_BAD_REQUEST,
                                     message="Failed to add category")
 
         category = Category.create_category(name=name)
@@ -83,7 +86,7 @@ class CategoryView(GlobalAPIView, LimitOffsetPagination):
                                 message="Added category successfully")
 
 
-class BookSearchView(GlobalAPIView, LimitOffsetPagination):
+class BookSearchView(AuthenticatedAPIView, LimitOffsetPagination):
 
     def get(self, request):
         author_id = request.query_params.get("author_id")
@@ -96,17 +99,20 @@ class BookSearchView(GlobalAPIView, LimitOffsetPagination):
             return StandardResponse(
                 response_data={}, error={
                     "most_sold": "Can fetch most sold only based Author or Category, remove query text"},
+                http_status=status.HTTP_400_BAD_REQUEST,
                 message="Error while searching for books"
             )
         if most_sold and not (category_id or author_id):
             return StandardResponse(response_data={},
                                     error={"most_sold": f"Author or Category is required to get most sold book"},
+                                    http_status=status.HTTP_400_BAD_REQUEST,
                                     message="Error while searching for books")
         books = Book.objects.none()
         if author_id:
             author = Author.objects.filter(pk=author_id).first()
             if not author:
                 return StandardResponse(response_data={}, error={"author_id": f"Author not found with ID {author_id}"},
+                                        http_status=status.HTTP_400_BAD_REQUEST,
                                         message="Error while searching for books")
 
         if category_id:
@@ -114,6 +120,7 @@ class BookSearchView(GlobalAPIView, LimitOffsetPagination):
             if not category:
                 return StandardResponse(response_data={},
                                         error={"category_id": f"Category not found with ID {category_id}"},
+                                        http_status=status.HTTP_400_BAD_REQUEST,
                                         message="Error while searching for books")
 
         if author_id:
@@ -142,7 +149,7 @@ class BookSearchView(GlobalAPIView, LimitOffsetPagination):
         return StandardResponse(response_data=serialized_data, total_count=total_count, message=message)
 
 
-class BookView(GlobalAPIView):
+class BookView(AuthenticatedAPIView):
 
     @required_params(params=["title", "author_id", "category_id", "publisher_name", "published_date", "price"])
     def post(self, request):
@@ -180,7 +187,8 @@ class BookView(GlobalAPIView):
             errors.update({"price": "Price for the book should be more than 0"})
 
         if errors:
-            return StandardResponse(response_data={}, error=errors, message="Error while adding a book")
+            return StandardResponse(response_data={}, error=errors, http_status=status.HTTP_400_BAD_REQUEST,
+                                    message="Error while adding a book")
 
         book = Book.add_book(title=title, author=author, category=category,
                              publisher_name=publisher_name, published_date=published_date, price=price,

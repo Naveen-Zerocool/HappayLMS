@@ -18,7 +18,9 @@ from django.urls import path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 
-from book_store import api_urls
+from book_store import api_urls as book_store_api_urls
+from auth import api_urls as auth_api_urls
+
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -32,6 +34,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include(api_urls)),
+    path('api/v1/auth/', include(auth_api_urls)),
+    path('api/v1/book-store/', include(book_store_api_urls)),
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
