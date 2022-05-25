@@ -8,6 +8,8 @@ class StandardResponse(Response):
                  total_count=None):
         if not http_status:
             http_status = status.HTTP_200_OK
+        else:
+            success = False
         response = {"success": success, "message": message,
                     "data": response_data, "error": error}
         if total_count:
