@@ -18,11 +18,12 @@
 **Running on local machine**
 1. sudo pip install virtualenv
 2. virtualenv -p python3 happy-lms-venv
-3. git clone <repo_link>
-4. pip install -r requirements.txt
-5. python3 manage.py migrate
-6. python3 manage.py createsuperuser
-7. python3 manage.py runserver
+3. source happy-lms-venv/bin/activate
+4. git clone <repo_link>
+5. pip install -r requirements.txt
+6. python3 manage.py migrate
+7. python3 manage.py createsuperuser
+8. python3 manage.py runserver
 
 **Admin Site:** http://127.0.0.1:8000/admin/
 
